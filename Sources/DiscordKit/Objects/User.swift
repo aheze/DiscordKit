@@ -45,10 +45,6 @@ public struct User: Codable, GatewayData, Equatable {
         self.public_flags = public_flags
     }
     
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
-    }
-    
     public let id: Snowflake
     
     /// Username of this user
@@ -157,7 +153,9 @@ public extension User {
         guard var decodedFlags = flags?.decodeFlags(flags: UserFlags.staff) else {
             return nil
         }
-        if premium_type != nil { decodedFlags.append(.premium) }
+        if let premiumType = premium_type, premiumType != 0 {
+            decodedFlags.append(.premium)
+        }
         return decodedFlags
     }
 }
