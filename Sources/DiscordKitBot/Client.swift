@@ -1,38 +1,43 @@
 //
 //  Client.swift
-//  
+//
 //
 //  Created by Vincent Kwok on 21/11/22.
 //
 
+import DiscordKitCore
 import Foundation
 import Logging
-import DiscordKitCore
 
 /// The main client class for bots to interact with Discord's API
 public final class Client {
     // REST handler
-    private let rest = DiscordREST()
+    public let rest = DiscordREST()
 
     // MARK: Gateway vars
+
     fileprivate var gateway: RobustWebSocket?
     private var evtHandlerID: EventDispatch.HandlerIdentifier?
 
     // MARK: Application Command Handlers
+
     fileprivate var appCommandHandlers: [Snowflake: NewAppCommand.Handler] = [:]
 
     // MARK: Event publishers
+
     private let notificationCenter = NotificationCenter()
-    public let ready: NCWrapper<()>
+    public let ready: NCWrapper<Void>
     public let messageCreate: NCWrapper<Message>
 
     // MARK: Configuration Members
+
     public let intents: Intents
 
     // Logger
     private static let logger = Logger(label: "Client", level: nil)
 
     // MARK: Information about the bot
+
     /// The user object of the bot
     public fileprivate(set) var user: User?
     /// The application ID of the bot
@@ -71,6 +76,7 @@ public final class Client {
             self?.handleEvent(data)
         }
     }
+
     /// Login to the Discord API with a token from the environment
     ///
     /// This method attempts to retrieve the token from the `DISCORD_TOKEN` environment
@@ -155,14 +161,17 @@ extension Client {
 }
 
 // MARK: - REST-related API
+
 public extension Client {
     // MARK: Interactions
+
     /// Register Application Commands with a result builder
     func registerApplicationCommands(
         guild: Snowflake? = nil, @AppCommandBuilder _ commands: () -> [NewAppCommand]
     ) async throws {
         try await registerApplicationCommands(guild: guild, commands())
     }
+
     /// Register Application Commands with the provided application command create structs
     func registerApplicationCommands(guild: Snowflake? = nil, _ commands: [NewAppCommand]) async throws {
         let registeredCommands = try await rest.bulkOverwriteCommands(commands, applicationID: applicationID!, guildID: guild)
