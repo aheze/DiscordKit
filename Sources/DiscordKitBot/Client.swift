@@ -24,7 +24,7 @@ public final class Client {
     // MARK: Event publishers
     private let notificationCenter = NotificationCenter()
     public let ready: NCWrapper<()>
-    public let messageCreate: NCWrapper<BotMessage>
+    public let messageCreate: NCWrapper<Message>
 
     // MARK: Configuration Members
     public let intents: Intents
@@ -136,8 +136,8 @@ extension Client {
                 ready.emit()
             }
         case .messageCreate(let message):
-            let botMessage = BotMessage(from: message, rest: rest)
-            messageCreate.emit(value: botMessage)
+//            let botMessage = BotMessage(from: message, rest: rest)
+            messageCreate.emit(value: message)
         case .interaction(let interaction):
             Self.logger.trace("Received interaction", metadata: ["interaction.id": "\(interaction.id)"])
             // Handle interactions based on type
