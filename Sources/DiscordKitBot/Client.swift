@@ -28,6 +28,7 @@ public final class Client {
     private let notificationCenter = NotificationCenter()
     public let ready: NCWrapper<Void>
     public let messageCreate: NCWrapper<Message>
+    public let messageReactAdd: NCWrapper<Reaction>
 
     // MARK: Configuration Members
 
@@ -56,6 +57,7 @@ public final class Client {
         // Init event wrappers
         ready = .init(.ready, notificationCenter: notificationCenter)
         messageCreate = .init(.messageCreate, notificationCenter: notificationCenter)
+        messageReactAdd = .init(.messageReactAdd, notificationCenter: notificationCenter)
     }
 
     deinit {
@@ -128,6 +130,7 @@ extension Client {
 
     /// Handle a subset of gateway events
     private func handleEvent(_ data: GatewayIncoming.Data) {
+        
         switch data {
         case .botReady(let readyEvt):
             let firstTime = applicationID == nil
@@ -141,6 +144,8 @@ extension Client {
                 ])
                 ready.emit()
             }
+        case .messageReactAdd(let reaction):
+            messageReactAdd.emit(value: reaction)
         case .messageCreate(let message):
 //            let botMessage = BotMessage(from: message, rest: rest)
             messageCreate.emit(value: message)

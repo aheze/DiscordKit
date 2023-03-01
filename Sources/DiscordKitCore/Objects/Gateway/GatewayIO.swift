@@ -26,6 +26,8 @@ public struct GatewayIncoming: Decodable {
 
     /// An enum representing possible payloads
     public enum Data {
+        case messageReactAdd(Reaction)
+
         // MARK: - Gateway lifecycle
 
         /// Invalid session payload
@@ -189,13 +191,14 @@ public struct GatewayIncoming: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let action = try values.decode(GatewayIncomingOpcodes.self, forKey: .opcode)
-
+        print("VALUES! > \(values)")
         opcode = action
         seq = try values.decodeIfPresent(Int.self, forKey: .seq)
         type = try values.decodeIfPresent(GatewayEvent.self, forKey: .type)
 
         switch action {
         // MARK: Gateway lifecycle
+
         case .hello: data = .hello(try values.decode(GatewayHello.self, forKey: .data))
         case .invalidSession: data = .invalidSession(canResume: try values.decode(Bool.self, forKey: .data))
         case .heartbeat: data = .heartbeat
@@ -214,6 +217,7 @@ public struct GatewayIncoming: Decodable {
             case .resumed: data = .resumed
 
             // MARK: Channels
+
             case .channelCreate: data = .channelCreate(try values.decode(Channel.self, forKey: .data))
             case .channelUpdate: data = .channelUpdate(try values.decode(Channel.self, forKey: .data))
             case .channelDelete: data = .channelDelete(try values.decode(Channel.self, forKey: .data))
@@ -227,7 +231,9 @@ public struct GatewayIncoming: Decodable {
             case .threadMemberUpdate: data = try values.decode(ThreadMember.self, forKey: .data)
             case .threadMembersUpdate: data = try values.decode(ThreadMembersUpdate.self, forKey: .data)
 */
+
             // MARK: Guilds
+
             case .guildCreate: data = .guildCreate(try values.decode(Guild.self, forKey: .data))
             case .guildUpdate: data = .guildUpdate(try values.decode(Guild.self, forKey: .data))
             case .guildDelete: data = .guildDelete(try values.decode(GuildUnavailable.self, forKey: .data))
@@ -246,7 +252,10 @@ public struct GatewayIncoming: Decodable {
             case .guildSchEvtUserAdd, .guildSchEvtUserRemove: data = try values.decode(GuildSchEvtUserEvt.self, forKey: .data)
 */
                 // More events go here
+
             // MARK: Messages
+
+            case .messageReactAdd: data = .messageReactAdd(try values.decode(Reaction.self, forKey: .data))
             case .messageCreate: data = .messageCreate(try values.decode(Message.self, forKey: .data))
             case .messageUpdate: data = .messageUpdate(try values.decode(PartialMessage.self, forKey: .data))
             case .messageDelete: data = .messageDelete(try values.decode(MessageDelete.self, forKey: .data))
@@ -254,21 +263,23 @@ public struct GatewayIncoming: Decodable {
             case .messageACK: data = .messageACK(try values.decode(MessageACKEvt.self, forKey: .data))
 
             // MARK: Users
+
             case .userUpdate: data = .userUpdate(try values.decode(CurrentUser.self, forKey: .data))
             case .presenceUpdate: data = .presenceUpdate(try values.decode(PresenceUpdate.self, forKey: .data))
 
             // MARK: Interactions
+
             case .interactionCreate: data = .interaction(try values.decode(Interaction.self, forKey: .data))
 
-/*
-            case .typingStart: data = try values.decode(TypingStart.self, forKey: .data)
-
-            // MARK: - User account-specific events
-            case .channelUnreadUpdate: data = try values.decode(ChannelUnreadUpdate.self, forKey: .data)
- */
+            /*
+                        case .typingStart: data = try values.decode(TypingStart.self, forKey: .data)
+             
+                        // MARK: - User account-specific events
+                        case .channelUnreadUpdate: data = try values.decode(ChannelUnreadUpdate.self, forKey: .data)
+             */
             case .userSettingsProtoUpdate: data = .settingsProtoUpdate(
-                try values.decode(GatewaySettingsProtoUpdate.self, forKey: .data)
-            )
+                    try values.decode(GatewaySettingsProtoUpdate.self, forKey: .data)
+                )
             default: data = .unknown
             }
         }

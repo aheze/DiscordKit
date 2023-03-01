@@ -7,8 +7,11 @@
 
 import Foundation
 
-public struct Reaction: Codable {
-    public let count: Int
-    public let me: Bool // swiftlint:disable:this identifier_name
+public struct Reaction: Codable, GatewayData {
+    public let user_id: Snowflake
+    public let channel_id: Snowflake
+    public let message_id: Snowflake
+    public let guild_id: Snowflake
+    public let member: Member
     public let emoji: Emoji
 }
