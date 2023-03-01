@@ -54,12 +54,7 @@ public extension DiscordREST {
         messageID: Snowflake,
         emojiID: String
     ) async throws {
-        
-//        let path = "/channels/\(channelID)/messages/\(messageID)/reactions/\(emojiID.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)/%40me" /// not allowed
-        let path = "/channels/\(channelID)/messages/\(messageID)/reactions/\(emojiID)/@me" /// unknown emoji
-        print("path: \(path)")
-        
-//        try await emptyPutReq(path: "/channels/1079680332162412564/messages/1080395725537542155/reactions/hi%3A869638029558566983/%40me?location=Message&burst=false")
+        let path = "/channels/\(channelID)/messages/\(messageID)/reactions/\(emojiID)/@me"
         try await emptyPutReq(path: path)
     }
 
