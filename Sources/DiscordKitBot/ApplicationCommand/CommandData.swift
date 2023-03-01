@@ -12,12 +12,13 @@ import DiscordKitCore
 public class CommandData {
     internal init(
         optionValues: [OptionData],
-        rest: DiscordREST, applicationID: String, interactionID: Snowflake, token: String
+        rest: DiscordREST, applicationID: String, interactionID: Snowflake, token: String, userID: String?
     ) {
         self.rest = rest
         self.token = token
         self.interactionID = interactionID
         self.applicationID = applicationID
+        self.userID = userID
 
         self.optionValues = Self.unwrapOptionDatas(optionValues)
     }
@@ -36,6 +37,8 @@ public class CommandData {
 
     /// If this reply has already been deferred
     fileprivate var hasReplied = false
+    
+    public var userID: String?
 
     // MARK: Parameters for executing callbacks
     /// The token to use when carrying out actions with this interaction

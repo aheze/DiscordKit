@@ -116,13 +116,13 @@ extension Client {
     public var isReady: Bool { gateway?.sessionOpen == true }
 
     /// Invoke the handler associated with the respective commands
-    private func invokeCommandHandler(_ commandData: Interaction.Data.AppCommandData, id: Snowflake, token: String) {
+    private func invokeCommandHandler(_ commandData: Interaction.Data.AppCommandData, id: Snowflake, token: String, userID: String?) {
         if let handler = appCommandHandlers[commandData.id] {
             Self.logger.trace("Invoking application handler", metadata: ["command.name": "\(commandData.name)"])
             Task {
                 await handler(.init(
                     optionValues: commandData.options ?? [],
-                    rest: rest, applicationID: applicationID!, interactionID: id, token: token
+                    rest: rest, applicationID: applicationID!, interactionID: id, token: token, userID: userID
                 ))
             }
         }
@@ -150,11 +150,12 @@ extension Client {
 //            let botMessage = BotMessage(from: message, rest: rest)
             messageCreate.emit(value: message)
         case .interaction(let interaction):
+            
             Self.logger.trace("Received interaction", metadata: ["interaction.id": "\(interaction.id)"])
             // Handle interactions based on type
             switch interaction.data {
             case .applicationCommand(let commandData):
-                invokeCommandHandler(commandData, id: interaction.id, token: interaction.token)
+                invokeCommandHandler(commandData, id: interaction.id, token: interaction.token, userID: interaction.member?.user?.id)
             case .messageComponent(let componentData):
                 print("Component interaction: \(componentData.custom_id)")
             default: break
