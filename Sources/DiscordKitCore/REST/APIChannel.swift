@@ -58,6 +58,33 @@ public extension DiscordREST {
         try await emptyPutReq(path: path)
     }
 
+    func deleteReaction(
+        channelID: Snowflake,
+        messageID: Snowflake,
+        emojiID: String,
+        userID: String
+    ) async throws {
+        let path = "/DELETE/channels/\(channelID)/messages/\(messageID)/reactions/\(emojiID)/\(userID)"
+        try await deleteReq(path: path)
+    }
+
+    func deleteAllReactions(
+        channelID: Snowflake,
+        messageID: Snowflake
+    ) async throws {
+        let path = "/channels/\(channelID)/messages/\(messageID)/reactions"
+        try await deleteReq(path: path)
+    }
+    
+    func deleteAllReactionsForEmoji(
+        channelID: Snowflake,
+        messageID: Snowflake,
+        emojiID: String
+    ) async throws {
+        let path = "/channels/\(channelID)/messages/\(messageID)/reactions/\(emojiID)"
+        try await deleteReq(path: path)
+    }
+
     /// Delete Message
     ///
     /// > DELETE: `/channels/{channel.id}/messages/{message.id}`
