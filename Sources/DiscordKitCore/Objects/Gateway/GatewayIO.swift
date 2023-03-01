@@ -191,7 +191,7 @@ public struct GatewayIncoming: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let action = try values.decode(GatewayIncomingOpcodes.self, forKey: .opcode)
-        print("VALUES! > \(values)")
+        
         opcode = action
         seq = try values.decodeIfPresent(Int.self, forKey: .seq)
         type = try values.decodeIfPresent(GatewayEvent.self, forKey: .type)

@@ -100,7 +100,8 @@ public extension DiscordREST {
 
         // Make request
         guard let (data, response) = try? await DiscordREST.session.data(for: req),
-              let httpResponse = response as? HTTPURLResponse else {
+              let httpResponse = response as? HTTPURLResponse
+        else {
             throw RequestError.invalidResponse
         }
         guard httpResponse.statusCode / 100 == 2 else { // Check if status code is 2**
@@ -197,6 +198,17 @@ public extension DiscordREST {
         } catch {
             throw RequestError.jsonDecodingError(error: error)
         }
+    }
+
+    /// Make a `PUT` request to the Discord REST API
+    func emptyPutReq(
+        path: String
+    ) async throws {
+        _ = try await makeRequest(
+            path: path,
+            body: nil,
+            method: .put
+        )
     }
 
     /// Make a `PUT` request to the Discord REST API
