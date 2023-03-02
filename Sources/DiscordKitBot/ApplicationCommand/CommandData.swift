@@ -1,23 +1,24 @@
 //
 //  CommandData.swift
-//  
+//
 //
 //  Created by Vincent Kwok on 12/12/22.
 //
 
-import Foundation
 import DiscordKitCore
+import Foundation
 
 /// Provides methods to get parameters of and respond to application command interactions
 public class CommandData {
     internal init(
         optionValues: [OptionData],
-        rest: DiscordREST, applicationID: String, interactionID: Snowflake, token: String, userID: String?
+        rest: DiscordREST, applicationID: String, interactionID: Snowflake, token: String, channelID: String?, userID: String?
     ) {
         self.rest = rest
         self.token = token
         self.interactionID = interactionID
         self.applicationID = applicationID
+        self.channelID = channelID
         self.userID = userID
 
         self.optionValues = Self.unwrapOptionDatas(optionValues)
@@ -37,10 +38,13 @@ public class CommandData {
 
     /// If this reply has already been deferred
     fileprivate var hasReplied = false
-    
+
+    public var channelID: String?
+
     public var userID: String?
 
     // MARK: Parameters for executing callbacks
+
     /// The token to use when carrying out actions with this interaction
     let token: String
     /// The ID of this interaction
@@ -56,19 +60,23 @@ public class CommandData {
 }
 
 // MARK: - Getter functions for option values
+
 public extension CommandData {
     /// Get the unboxed `String` value of an option
     func optionValue(of name: String) -> String? {
         optionValues[name]?.value?.value()
     }
+
     /// Get the unboxed `Int` value of an option
     func optionValue(of name: String) -> Int? {
         optionValues[name]?.value?.value()
     }
+
     /// Get the unboxed `Double` value of an option
     func optionValue(of name: String) -> Double? {
         optionValues[name]?.value?.value()
     }
+
     /// Get the unboxed `Bool` value of an option
     func optionValue(of name: String) -> Bool? {
         optionValues[name]?.value?.value()
@@ -91,6 +99,7 @@ public extension CommandData {
 }
 
 // MARK: - Callback APIs
+
 public extension CommandData {
     /// Wrapper function to send an interaction response with the current interaction's ID and token
     private func sendResponse(
@@ -115,17 +124,21 @@ public extension CommandData {
             type: .interactionReply
         )
     }
+
     /// Reply to this interaction with plain text content
     func reply(_ content: String, ephemeral: Bool = false) async throws {
         try await reply(content: content, embeds: nil, components: nil, ephemeral: ephemeral)
     }
+
     func reply(_ content: String, ephemeral: Bool = false, @ComponentBuilder _ components: () -> [Component]) async throws {
         try await reply(content: content, embeds: nil, components: components(), ephemeral: ephemeral)
     }
+
     /// Reply to this interaction with embeds
     func reply(ephemeral: Bool = false, @EmbedBuilder _ embeds: () -> [BotEmbed]) async throws {
         try await reply(content: nil, embeds: embeds(), components: nil, ephemeral: ephemeral)
     }
+
     func reply(ephemeral: Bool = false, @EmbedBuilder _ embeds: () -> [BotEmbed], @ComponentBuilder components: () -> [Component]) async throws {
         try await reply(content: nil, embeds: embeds(), components: components(), ephemeral: ephemeral)
     }
